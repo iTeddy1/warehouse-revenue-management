@@ -61,12 +61,12 @@ const data: { navMain: NavItem[]; navSecondary: NavItem[] } = {
   navSecondary: [
     {
       title: 'Cài đặt',
-      url: '/setting',
+      url: '/settings',
       icon: IconSettings,
     },
     {
       title: 'Sao lưu',
-      url: '/backup',
+      url: '/settings',
       icon: IconArrowBackUp,
     },
   ],

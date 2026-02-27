@@ -24,6 +24,9 @@ import { ReportRepository } from "../modules/reports/report.repo.js";
 import { ReportService } from "../modules/reports/report.service.js";
 import { ReportController } from "../modules/reports/report.controller.js";
 import { reportRoutes } from "../modules/reports/report.routes.js";
+import { SystemService } from "../modules/system/system.service.js";
+import { SystemController } from "../modules/system/system.controller.js";
+import { systemRoutes } from "../modules/system/system.routes.js";
 
 const prisma = new PrismaClient();
 const container = new ServiceContainer(prisma);
@@ -55,12 +58,14 @@ export async function registerPlugins(app: FastifyInstance) {
   const importService = new ImportService(importRepository, productRepository, prisma);
   const saleService = new SaleService(saleRepository, prisma);
   const reportService = new ReportService(reportRepository);
+  const systemService = new SystemService();
 
   // Initialize controllers
   const productController = new ProductController(productService);
   const importController = new ImportController(importService);
   const saleController = new SaleController(saleService);
   const reportController = new ReportController(reportService);
+  const systemController = new SystemController(systemService);
 
   // Decorate app with authenticate middleware
   // const authMiddleware = createAuthMiddleware(authService, userRepository);
@@ -92,6 +97,12 @@ export async function registerPlugins(app: FastifyInstance) {
         await reportRoutes(api, reportController);
       },
       { prefix: '/api/reports' },
+    );
+    await instance.register(
+      async (api) => {
+        await systemRoutes(api, systemController);
+      },
+      { prefix: '/api/system' },
     );
   });
 

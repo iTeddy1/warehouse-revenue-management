@@ -1,0 +1,28 @@
+# Backend Development Dockerfile
+FROM node:20-alpine
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma
+
+# Install dependencies
+RUN npm ci
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy source code
+COPY . .
+RUN npm run build
+
+# Expose port
+EXPOSE 4000
+
+# Start the application in development mode
+CMD ["npm", "run", "dev"]
