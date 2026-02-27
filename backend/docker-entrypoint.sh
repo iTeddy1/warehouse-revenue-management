@@ -11,15 +11,15 @@ done
 
 echo "✅ Database connection established"
 
-# Apply migrations
-echo "🔄 Applying database migrations..."
-npx prisma migrate deploy
+# Apply schema to database
+echo "🔄 Applying database schema..."
+npx prisma db push --accept-data-loss
 
 if [ $? -eq 0 ]; then
-    echo "✅ Database migrations applied successfully"
+    echo "✅ Database schema applied successfully"
 else
-    echo "❌ Migration failed, trying db push..."
-    npx prisma db push --accept-data-loss
+    echo "❌ Schema push failed, exiting..."
+    exit 1
 fi
 
 # Seed database (optional, continue even if fails)

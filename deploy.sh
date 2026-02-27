@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Building and starting Money Management Application..."
+echo "🚀 Building and starting Warehouse and Revenue Management Application..."
 
 # Stop and remove existing containers
 echo "🧹 Cleaning up existing containers..."

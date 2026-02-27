@@ -1,6 +1,6 @@
 @echo off
 echo ================================
-echo Dang khoi dong phan mem Quan Ly Dong Tien...
+echo Dang khoi dong phan mem Quan Ly kho va doanh thu...
 echo ================================
 
 docker compose up -d
