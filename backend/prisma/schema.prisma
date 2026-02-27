@@ -1,0 +1,75 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Bảng Sản phẩm
+model Product {
+  id          String         @id @default(uuid()) @db.Uuid
+  code        String         @unique @map("product_code")
+  name        String         @map("product_name")
+  unit        String         @map("unit")
+  costPrice   Decimal        @map("cost_price") @db.Decimal(12, 2)
+  sellPrice   Decimal        @map("sell_price") @db.Decimal(12, 2)
+  stockQty    Int            @default(0) @map("stock_qty")
+  alertLevel  Int            @default(10) @map("alert_level")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  imports     ImportRecord[]
+  saleDetails SaleDetail[]
+
+  @@map("products")
+}
+
+// Bảng Lịch sử Nhập kho
+model ImportRecord {
+  id          String   @id @default(uuid()) @db.Uuid @map("import_id")
+  importDate  DateTime @default(now()) @map("import_date")
+  productId   String   @map("product_id") @db.Uuid
+  quantity    Int      @map("quantity")
+  costPrice   Decimal  @map("cost_price") @db.Decimal(12, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relation: Restrict giúp chặn xóa sản phẩm nếu đã có lịch sử nhập kho (FR-03)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@map("import_records")
+}
+
+// Bảng Hóa đơn Bán hàng
+model Sale {
+  id          String       @id @default(uuid()) @db.Uuid @map("sale_id")
+  saleDate    DateTime     @default(now()) @map("sale_date")
+  totalAmount Decimal      @map("total_amount") @db.Decimal(15, 2)
+  totalProfit Decimal      @map("total_profit") @db.Decimal(15, 2)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  
+  // Relations
+  details     SaleDetail[]
+
+  @@map("sales")
+}
+
+// Bảng Chi tiết Hóa đơn
+model SaleDetail {
+  id          String  @id @default(uuid()) @db.Uuid @map("sale_detail_id")
+  saleId      String  @map("sale_id") @db.Uuid
+  productId   String  @map("product_id") @db.Uuid
+  quantity    Int     @map("quantity")
+  sellPrice   Decimal @map("sell_price") @db.Decimal(12, 2)
+  profit      Decimal @map("profit") @db.Decimal(12, 2)
+
+  // Relations
+  sale        Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product     Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@map("sale_details")
+}
